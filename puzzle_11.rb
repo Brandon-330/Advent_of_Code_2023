@@ -1,4 +1,4 @@
-SOLUTION PART 1
+# SOLUTION PART 1
 
 f = File.new('puzzle_11.txt').read.split("\n")
 
