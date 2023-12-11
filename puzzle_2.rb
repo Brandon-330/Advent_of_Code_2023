@@ -4,7 +4,7 @@ hsh = {
   'blue' => 14
 }
 
-f = File.new('puzzle_2.txt').readlines
+f = File.new('texts/puzzle_2.txt').readlines
 f = f.map do |line|
   line.split(': ')
 end

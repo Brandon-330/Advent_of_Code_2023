@@ -1,6 +1,4 @@
-require 'pry'
-
-f = File.new('puzzle_5.txt').readlines.map { |line| line.gsub("\n", '') }
+f = File.new('texts/puzzle_5.txt').readlines.map { |line| line.gsub("\n", '') }
 
 seed_keys = f[0][7..].split(' ').map(&:to_i)
 
@@ -98,7 +96,7 @@ end
 
 puts new_seed_keys.sort_by { |arr| arr[0] }[0][0]
 
-# f = File.new('puzzle_5.txt').readlines.map { |line| line.gsub("\n", '') }
+# f = File.new('texts/puzzle_5.txt').readlines.map { |line| line.gsub("\n", '') }
 
 # seed_keys = f[0][7..].split(' ').map(&:to_i)
 

@@ -1,3 +1,5 @@
+# SOLUTION PART 2
+
 class Hand
   attr_accessor :cards, :bid, :type_strength, :rank
 
@@ -152,62 +154,12 @@ class Card
   end
 end
 
-f = File.new('puzzle_7.txt').readlines.map { |line| line.split(' ') }
+f = File.new('texts/puzzle_7.txt').readlines.map { |line| line.split(' ') }
 
 all_hands_arr = f.map do |arr|
   cards, bid = arr
   Hand.new(cards, bid)
 end
-
-# GOOD
-# puts 'five_of_kind:'
-# puts Hand.new('JJJJJ', '1').type_strength == 0
-# puts Hand.new('AAAAJ', '1').type_strength == 0
-# puts Hand.new('AJJAA', '1').type_strength == 0
-# puts Hand.new('AAAAA', '2').type_strength == 0
-
-# # GOOD
-# puts 'four_of_kind:'
-# puts Hand.new('AJJJJ', '2').type_strength == 0
-# puts Hand.new('AJ3JJ', '2').type_strength == 1
-# puts Hand.new('A2J22', '2').type_strength == 1
-# puts Hand.new('AAAA1', '2').type_strength == 1
-
-# # GOOD
-# puts 'full_house:'
-# puts Hand.new('AAJ33', '2').type_strength == 2
-# puts Hand.new('AAA33', '2').type_strength == 2
-
-# # NG
-# puts 'three_of_a_kind:'
-# puts Hand.new('33321', '2').type_strength == 3
-# puts Hand.new('AAJ32', '2').type_strength == 3
-# puts Hand.new('ABJ33', '2').type_strength == 3
-# puts Hand.new('JJJ23', '2').type_strength == 1
-# puts Hand.new('J2J14', '2').type_strength == 3
-
-# puts 'two_pair:'
-# puts Hand.new('11223', '2').type_strength == 4
-# puts Hand.new('J1223', '2').type_strength == 3
-# puts Hand.new('JJ231', '2').type_strength == 3
-
-# # GOOD
-# puts 'one_pair:'
-# puts Hand.new('1234J', '2').type_strength == 5
-# puts Hand.new('12344', '2').type_strength == 5
-
-# # GOOD
-# puts 'high_card:'
-# puts Hand.new('12345', '2').type_strength == 6
-
-
-# p Hand.new('AAAJA', '1').type_strength == 0
-# p Hand.new('AAJJ2', '2').type_strength == 1
-# p Hand.new('ABBJA', '2').type_strength == 2
-# p Hand.new('AJJ23', '3').type_strength == 3
-# p Hand.new('123JJ', '4').type_strength == 3
-# p Hand.new('1234J', '5').type_strength == 5
-# p Hand.new('12345', '6').type_strength == 6
 
 sorted_all_hands_arr = all_hands_arr.sort.reverse
 
@@ -219,7 +171,7 @@ end
 
 puts total
 
-# # SOLUTION 1
+# SOLUTION PART 1
 
 # class Hand
 #   attr_accessor :cards, :bid, :type_strength, :rank
@@ -348,7 +300,7 @@ puts total
 #   end
 # end
 
-# f = File.new('puzzle_7.txt').readlines.map { |line| line.split(' ') }
+# f = File.new('texts/puzzle_7.txt').readlines.map { |line| line.split(' ') }
 
 # all_hands_arr = f.map do |arr|
 #   cards, bid = arr

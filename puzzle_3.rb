@@ -1,4 +1,4 @@
-f = File.new('puzzle_3.txt')
+f = File.new('texts/puzzle_3.txt')
 f = f.readlines
 f = f.map do |line|
   line.gsub("\n", '')

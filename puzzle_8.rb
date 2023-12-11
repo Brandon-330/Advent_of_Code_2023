@@ -1,4 +1,6 @@
-f = File.new('puzzle_8.txt').readlines
+# SOLUTION PART 2
+
+f = File.new('texts/puzzle_8.txt').readlines
 instructions = f[0].gsub("\n", '')
 
 nodes_hsh = f[2..].each_with_object({}) do |line, hsh|
@@ -42,49 +44,9 @@ end
 
 puts counter
 
-
-
-
-
-# f = File.new('puzzle_8.txt').readlines
-# instructions = f[0].gsub("\n", '')
-
-# nodes_hsh = f[2..].each_with_object({}) do |line, hsh|
-#   line = line.gsub("\n", '')
-  
-#   key, values = line.split(' = ')
-#   values_arr = values.gsub(/[()]/, '').split(', ')
-#   hsh[key] = values_arr
-# end
-
-# idx = 0
-# current_location = 'ZZZ'
-# counter = 0
-# while idx < instructions.size
-#   counter += 1
-#   current_instruction = case instructions[idx]
-#                         when 'L' then 0
-#                         when 'R' then 1
-#                         end
-
-#   current_location = nodes_hsh[current_location][current_instruction]
-
-#   break if current_location.end_with?('Z')
-
-#   idx += 1
-
-#   idx = 0 if idx == instructions.size
-# end
-
-# puts counter
-
-
-
-
-
 # SOLUTION 1
 
-# f = File.new('puzzle_8.txt').readlines
+# f = File.new('texts/puzzle_8.txt').readlines
 # instructions = f[0].gsub("\n", '')
 
 # nodes_hsh = f[2..].each_with_object({}) do |line, hsh|

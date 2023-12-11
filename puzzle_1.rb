@@ -10,7 +10,7 @@ num_hash = {
   'nine' => '9'
 }
 
-f = File.new('puzzle_1.txt')
+f = File.new('texts/puzzle_1.txt')
 integer_lines = f.readlines.map do |line|
   # new_line = ''
   # line.scan(/([0-9]|one|two|three|four|five|six|seven|eight|nine)/) do |num_str_arr|

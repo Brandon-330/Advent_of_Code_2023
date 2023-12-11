@@ -1,4 +1,6 @@
-f = File.new('puzzle_6.txt').readlines.map do |line| 
+# SOLUTION PART 2
+
+f = File.new('texts/puzzle_6.txt').readlines.map do |line| 
   line.gsub("\n", '')
   line.gsub(/[Time:|Distance:|]/, '')
 end
@@ -32,7 +34,9 @@ end
 
 p(time + 1 - no_way*2)
 
-# f = File.new('puzzle_6.txt').readlines.map do |line| 
+# SOLUTION PART 1
+
+# f = File.new('texts/puzzle_6.txt').readlines.map do |line| 
 #   line.gsub("\n", '')
 #   line.gsub(/[Time:|Distance:|]/, '')
 # end

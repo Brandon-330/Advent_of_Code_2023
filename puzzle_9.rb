@@ -1,3 +1,5 @@
+# SOLUTION PART 2
+
 def determine_history(sequence)
   new_arr = []
   idx = 1
@@ -9,7 +11,7 @@ def determine_history(sequence)
   new_arr
 end
 
-f = File.new('puzzle_9.txt').readlines
+f = File.new('texts/puzzle_9.txt').readlines
 all_lines = f.map { |line| line.gsub("\n", '').split(' ').map(&:to_i) }
 
 all_lines.map! do |main_seq|
@@ -36,7 +38,7 @@ end
 
 p all_lines.inject(0) { |sum, num| sum + num }
 
-# SOLUTION 1
+# SOLUTION PART 1
 
 # def determine_history(sequence)
 #   new_arr = []
@@ -49,7 +51,7 @@ p all_lines.inject(0) { |sum, num| sum + num }
 #   new_arr
 # end
 
-# f = File.new('puzzle_9.txt').readlines
+# f = File.new('texts/puzzle_9.txt').readlines
 # all_lines = f.map { |line| line.gsub("\n", '').split(' ').map(&:to_i) }
 
 # all_lines.map! do |main_seq|

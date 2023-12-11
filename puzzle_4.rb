@@ -1,4 +1,4 @@
-f = File.new('puzzle_4.txt').readlines
+f = File.new('texts/puzzle_4.txt').readlines
 lotteries = f.map do |line|
               colon_idx = line.index(':')
               line.gsub("\n", '')[colon_idx + 2..-1].split(' | ')
