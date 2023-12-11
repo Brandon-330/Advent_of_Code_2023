@@ -56,7 +56,7 @@ end
 p minimum_steps_each_comb.sum
 
 # SOLUTION PART 2
-# f = File.new('puzzle_11.txt').read.split("\n")
+# f = File.new('texts/puzzle_11.txt').read.split("\n")
 
 # double_cols_idx = (0...f[0].length).to_a
 # double_rows_idx = []
