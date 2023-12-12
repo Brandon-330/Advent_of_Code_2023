@@ -1,3 +1,15 @@
+# SOLUTION PART 2
+
+def return_idx_corners_and_adjacent_to(line_idx, char_idx, f)
+  adjacent_arr = return_idx_adjacent_to(line_idx, char_idx, f)
+  corners_arr = []
+  corners_arr << [line_idx - 1, char_idx - 1] unless line_idx < 0 || char_idx < 0
+  corners_arr << [line_idx - 1, char_idx + 1] unless line_idx < 0 || char_idx >= f[0].length - 1
+  corners_arr << [line_idx + 1, char_idx - 1] unless line_idx >= (f.size - 1) || char_idx < 0
+  corners_arr << [line_idx + 1, char_idx + 1] unless line_idx >= (f.size - 1) || char_idx >= f[0].length - 1
+  adjacent_arr + corners_arr
+end
+
 def return_idx_adjacent_to(line_idx, char_idx, f)
   new_arr = []
   new_arr << [line_idx - 1, char_idx] unless line_idx < 0# North
@@ -53,8 +65,6 @@ PIPE_TYPES = {
   'F' => [[0, 1], [1, 0]]
 }
 
-pipe_seq = 0
-
 start_line_idx = 0
 start_char_idx = 0
 adjacent_pipes = 0
@@ -74,7 +84,7 @@ f.each_with_index do |line, line_idx|
       f[iter_line_idx][iter_char_idx]  != '.' && valid_pipe?(position, [s_line_idx, s_char_idx], f)
     end
 
-    f[s_line_idx][s_char_idx] = 'a'
+    f[s_line_idx][s_char_idx] = 'e' #e
   end
 end
 
@@ -82,7 +92,6 @@ last_location = [[start_line_idx, start_char_idx], [start_line_idx, start_char_i
 current_pipes = adjacent_pipes
 
 while !current_pipes.empty? && !current_pipes.any? { |pipe_location| current_pipes.count(pipe_location) >= 2 }
-  pipe_seq += 1
   new_current_pipes = []
 
   last_location_idx = 0
@@ -119,8 +128,6 @@ while !current_pipes.empty? && !current_pipes.any? { |pipe_location| current_pip
   current_pipes = new_current_pipes
 end
 
-p (pipe_seq += 1)
-
 new_f = f.map do |line|
   first_boundary = line.index(/[a-z]/)
   last_boundary = find_last_index_of(/[a-z]/, line)
@@ -136,7 +143,17 @@ new_f = f.map do |line|
   end
 end
 
-new_f.map! do |line|
+new_f = new_f.map do |line| 
+  line.chars.map do |char| 
+    if PIPE_TYPES.keys.include?(char)
+      '.'
+    else
+      char
+    end
+  end.join 
+end
+
+new_f = new_f.map do |line|
   line.chars.map do |char| 
     if PIPE_TO_LETTER.values.include?(char)
       PIPE_TO_LETTER.select { |pipe, v| v == char }.keys[0]
@@ -146,28 +163,21 @@ new_f.map! do |line|
   end.join
 end
 
-loop do 
-  f = new_f
-
-  line_idx = 0
-  new_f.each do |line|
-    line.chars.each_with_index do |char, char_idx|
-      if char == '.'
-        adjacent_idxs = return_idx_adjacent_to(line_idx, char_idx, new_f)
-        new_f[line_idx][char_idx] = 'O' if adjacent_idxs.any? do |adj_idxs| 
-                                          adj_line_idx, adj_char_idx = adj_idxs
-                                          new_f[adj_line_idx][adj_char_idx] == 'O'
-                                        end
+total_sum = 0
+new_f.each_with_index do |line, line_idx|
+  line.chars.each_with_index do |char, char_idx|
+    if char == '.'
+      iterating_line = line[0...char_idx]
+      counter = iterating_line.chars.count { |char| /[||J|L]/.match?(char) }      
+      if counter.odd?
+        total_sum += 1
+        new_f[line_idx][char_idx] = 'I'
       end
     end
-
-    line_idx += 1
   end
-
-  break if new_f == f
 end
 
-p f
+p total_sum + 1
 
 # SOLUTION PART 1
 
