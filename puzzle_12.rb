@@ -1,5 +1,7 @@
 def parse_line(line)
   springs, contiguous_group_of_damaged_springs = line.split(' ')
+  springs = springs * 5
+  contiguous_group_of_damaged_springs = contiguous_group_of_damaged_springs * 5
   contiguous_group_of_damaged_springs = contiguous_group_of_damaged_springs.split(',').map(&:to_i)
 
   [springs, contiguous_group_of_damaged_springs]
