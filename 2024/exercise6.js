@@ -14,6 +14,21 @@ function iterateTable(table, Cb) {
   });
 }
 
+function colContains(table, j, direction) {
+  for (let rowIdx = 0; rowIdx < table.length; rowIdx += 1) {
+    let row = table[rowIdx];
+    if (row[j] === direction) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function rowContains(table, i, direction) {
+  return table[i].some(el => el === direction);
+}
+
 function isOutsideBounds(table, i, j) {
   if (i < 0 || i >= table.length || j < 0 || j >= table[0].length) {
     return true;
@@ -26,8 +41,6 @@ function fillTable(table, i, j, direction = 'up') {
   if (isOutsideBounds(table, i, j)) {
     return;
   }
-
-  console.log(COUNTER, i, j)
 
   switch(direction) {
     case('up'):
@@ -54,7 +67,7 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i - 1, j)) {
           return;
         } else {
-          if (table[i][j] === 'R') {
+          if (rowContains(table, i, 'R')) {
             COUNTER += 1;
             table[i][j] = 'O';
           } else {
@@ -69,7 +82,7 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i + 1, j)) {
           return;
         } else {
-          if (table[i][j] === 'L') {
+          if (rowContains(table, i, 'L')) {
             COUNTER += 1;
             table[i][j] = 'O';
           } else {
@@ -84,7 +97,7 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j - 1)) {
           return;
         } else {
-          if (table[i][j] === 'U') {
+          if (colContains(table, j, 'U')) {
             COUNTER += 1;
             table[i][j] = 'O';
           } else {
@@ -99,7 +112,7 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j + 1)) {
           return;
         } else {
-          if (table[i][j] === 'D') {
+          if (colContains(table, j, 'D')) {
             COUNTER += 1;
             table[i][j] = 'O';
           } else {
@@ -116,18 +129,22 @@ function fillTable(table, i, j, direction = 'up') {
   
   switch(direction) {
     case('up'):
+      table[i + 1][j] = 'U';
       fillTable(table, i + 1, j, 'right');
 
       break;
     case('down'):
+      table[i - 1][j] = 'D';
       fillTable(table, i - 1, j, 'left');
 
       break;
     case('left'):
+      table[i][j + 1] = 'L';
       fillTable(table, i, j + 1, 'up');
 
       break;
     case('right'):
+      table[i][j - 1] = 'R';
       fillTable(table, i, j - 1, 'down');
 
       break;
