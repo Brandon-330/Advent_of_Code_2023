@@ -45,18 +45,30 @@ function fillHashes(table, arr) {
     let firstCoordinate = arr.shift();
     let [iFirst, jFirst] = firstCoordinate;
 
+    // Antennas themselves are also antinodes
+    table[iFirst][jFirst] = '#';
+
     arr.forEach(otherCoordinate => {
       let [iOther, jOther] = otherCoordinate;
       let iDiff = iOther - iFirst;
       let jDiff = jOther - jFirst;
-      
-      let hshPos = [[iFirst - iDiff, jFirst - jDiff], [iOther + iDiff, jOther + jDiff]];
-      hshPos.forEach(hshPosition => {
-        let [i, j] = hshPosition;
-        if (!isOutsideBounds(table, i, j)) {
-          table[i][j] = '#';
-        }
-      })
+
+      let hshPos1 = [iFirst - iDiff, jFirst - jDiff];
+      while (!isOutsideBounds(table, hshPos1[0], hshPos1[1])) {
+        let [i, j] = hshPos1;
+        table[i][j] = '#';
+        hshPos1[0] -= iDiff;
+        hshPos1[1] -= jDiff;
+      }
+
+      let hshPos2 = [iOther + iDiff, jOther + jDiff];
+      while (!isOutsideBounds(table, hshPos2[0], hshPos2[1])) {
+        let [i, j] = hshPos2;
+        table[i][j] = '#';
+        hshPos2[0] += iDiff;
+        hshPos2[1] += jDiff;
+      }
+
     });
   }
 }
