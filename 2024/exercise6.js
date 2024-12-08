@@ -14,19 +14,39 @@ function iterateTable(table, Cb) {
   });
 }
 
-function colContains(table, j, direction) {
+function colContains(table, i, j, direction) {
+  let col = [];
   for (let rowIdx = 0; rowIdx < table.length; rowIdx += 1) {
     let row = table[rowIdx];
-    if (row[j] === direction) {
-      return true;
-    }
+    col.push(row[j]);
   }
 
-  return false;
+  let effectiveCol;
+  if (direction === 'U') {
+    effectiveCol = col.slice(0, i);
+    effectiveCol = col.slice(effectiveCol.lastIndexOf('#') === -1 ? 0 : effectiveCol.lastIndexOf('#'), effectiveCol.length);
+  } else {
+    effectiveCol = col.slice(i);
+    effectiveCol = effectiveCol.slice(0, (effectiveCol.indexOf('#') === -1 ? effectiveCol.length : effectiveCol.indexOf('#')));
+    console.log(effectiveCol.join(''));
+
+  }
+
+  return effectiveCol.some(el => el === direction);
 }
 
-function rowContains(table, i, direction) {
-  return table[i].some(el => el === direction);
+function rowContains(table, i, j, direction) {
+  let row = table[i];
+  let effectiveRow;
+  if (direction === 'R') {
+    effectiveRow = row.slice(j);
+    effectiveRow = effectiveRow.slice(0, ((effectiveRow.indexOf('#') === -1 ? effectiveRow.length : effectiveRow.indexOf('#'))));
+  } else {
+    effectiveRow = row.slice(0, j);
+    effectiveRow = effectiveRow.slice((effectiveRow.lastIndexOf('#') === -1 ? 0 : effectiveRow.lastIndexOf('#')), effectiveRow.length);
+  }
+
+  return effectiveRow.some(el => el === direction);
 }
 
 function isOutsideBounds(table, i, j) {
@@ -40,25 +60,8 @@ function isOutsideBounds(table, i, j) {
 function fillTable(table, i, j, direction = 'up') {
   if (isOutsideBounds(table, i, j)) {
     return;
-  }
-
-  switch(direction) {
-    case('up'):
-      table[i][j] = 'U';
-
-      break;
-    case('down'):
-      table[i][j] = 'D';
-
-      break;
-    case('left'):
-      table[i][j] = 'L';
-
-      break;
-    case('right'):
-      table[i][j] = 'R';
-
-      break;
+  } else if (table[i][j] === '^') {
+    table[i][j] = 'U';
   }
 
   while (['R', 'D', 'U', 'L', 'O', '.'].includes(table[i][j])) {
@@ -67,13 +70,14 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i - 1, j)) {
           return;
         } else {
-          if (rowContains(table, i, 'R')) {
+          if (rowContains(table, i, j, 'R')) {
             COUNTER += 1;
-            table[i][j] = 'O';
-          } else {
+            // table[i - 1][j] = 'O';
+          } else if (table[i][j] !== 'O') {
             table[i][j] = 'U';
           }
 
+          table[i][j] = 'U';
           i -= 1;
         }
   
@@ -82,13 +86,14 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i + 1, j)) {
           return;
         } else {
-          if (rowContains(table, i, 'L')) {
+          if (rowContains(table, i, j, 'L')) {
             COUNTER += 1;
-            table[i][j] = 'O';
-          } else {
+            // table[i + 1][j] = 'O';
+          } else if (table[i][j] !== 'O') {
             table[i][j] = 'D';
           }
 
+          table[i][j] = 'D';
           i += 1;
         }
   
@@ -97,13 +102,14 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j - 1)) {
           return;
         } else {
-          if (colContains(table, j, 'U')) {
+          if (colContains(table, i, j, 'U')) {
             COUNTER += 1;
-            table[i][j] = 'O';
-          } else {
+            // table[i][j - 1] = 'O';
+          } else if (table[i][j] !== 'O') {
             table[i][j] = 'L';
           }
 
+          table[i][j] = 'L';
           j -= 1;
         }
   
@@ -112,10 +118,10 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j + 1)) {
           return;
         } else {
-          if (colContains(table, j, 'D')) {
+          if (colContains(table, i, j, 'D')) {
             COUNTER += 1;
-            table[i][j] = 'O';
-          } else {
+            // table[i][j + 1] = 'O';
+          } else if (table[i][j] !== 'O') {
             table[i][j] = 'R';
           }
 
@@ -129,23 +135,32 @@ function fillTable(table, i, j, direction = 'up') {
   
   switch(direction) {
     case('up'):
-      table[i + 1][j] = 'U';
-      fillTable(table, i + 1, j, 'right');
+      if (colContains(table, i + 1, j, 'D')) {
+        COUNTER += 1;
+      }
+
+      fillTable(table, i + 1, j + 1, 'right');
 
       break;
     case('down'):
-      table[i - 1][j] = 'D';
-      fillTable(table, i - 1, j, 'left');
+      if (colContains(table, i - 1, j, 'U')) {
+        COUNTER += 1;
+      }
+      fillTable(table, i - 1, j - 1, 'left');
 
       break;
     case('left'):
-      table[i][j + 1] = 'L';
-      fillTable(table, i, j + 1, 'up');
+      if (rowContains(table, i, j + 1, 'R')) {
+        COUNTER += 1;
+      }
+      fillTable(table, i - 1, j + 1, 'up');
 
       break;
     case('right'):
-      table[i][j - 1] = 'R';
-      fillTable(table, i, j - 1, 'down');
+      if (rowContains(table, i, j - 1, 'L')) {
+        COUNTER += 1;
+      }
+      fillTable(table, i + 1, j - 1, 'down');
 
       break;
   }

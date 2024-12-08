@@ -1,10 +1,10 @@
 ....#.....
-....RRRRD#
+....URRRR#
 ....U...D.
 ..#.U...D.
-..RRRRD#D.
+..URRRR#D.
 ..U.U.D.D.
-.#ULOLOLL.
-.RRRRRRD#.
-#UOLOLLO..
+.#LLLLDLD.
+.URRRRRR#.
+#LLLLLDD..
 ......#...
