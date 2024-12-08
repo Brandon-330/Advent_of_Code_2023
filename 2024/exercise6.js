@@ -14,39 +14,110 @@ function iterateTable(table, Cb) {
   });
 }
 
-function colContains(table, i, j, direction) {
-  let col = [];
-  for (let rowIdx = 0; rowIdx < table.length; rowIdx += 1) {
-    let row = table[rowIdx];
-    col.push(row[j]);
+function isLoopable(table, i, j, direction = 'up', hsh = {}, hashtagPos = '', startPos = true) {
+  if (isOutsideBounds(table, i, j)) {
+    return false;
   }
 
-  let effectiveCol;
-  if (direction === 'U') {
-    effectiveCol = col.slice(0, i);
-    effectiveCol = col.slice(effectiveCol.lastIndexOf('#') === -1 ? 0 : effectiveCol.lastIndexOf('#'), effectiveCol.length);
-  } else {
-    effectiveCol = col.slice(i);
-    effectiveCol = effectiveCol.slice(0, (effectiveCol.indexOf('#') === -1 ? effectiveCol.length : effectiveCol.indexOf('#')));
-    console.log(effectiveCol.join(''));
+  if (startPos) {
+    startPos = false;
 
+    switch(direction) {
+      case ('right'):
+        hashtagPos = [i - 1, j, table[i - 1][j]];
+        table[i - 1][j] = '#';
+        
+        // hsh[i - 1, j] = 'O';
+        break;
+      case ('left'):
+        hashtagPos = [i + 1, j, table[i + 1][j]];        
+        table[i + 1][j] = '#'
+        // hsh[i + 1, j] = 'O';
+        break;
+      case ('up'):
+        hashtagPos = [i, j - 1, table[i][j - 1]];
+        table[i][j - 1] = '#';
+        // hsh[i, j - 1] = 'O';
+        break;
+      case ('down'):
+        hashtagPos = [i, j + 1, table[i][j + 1]];
+        table[i][j + 1] = '#';
+        // hsh[i, j + 1] = 'O';
+        break;
+    }
   }
 
-  return effectiveCol.some(el => el === direction);
-}
 
-function rowContains(table, i, j, direction) {
-  let row = table[i];
-  let effectiveRow;
-  if (direction === 'R') {
-    effectiveRow = row.slice(j);
-    effectiveRow = effectiveRow.slice(0, ((effectiveRow.indexOf('#') === -1 ? effectiveRow.length : effectiveRow.indexOf('#'))));
-  } else {
-    effectiveRow = row.slice(0, j);
-    effectiveRow = effectiveRow.slice((effectiveRow.lastIndexOf('#') === -1 ? 0 : effectiveRow.lastIndexOf('#')), effectiveRow.length);
+  while (['R', 'D', 'U', 'L', '.'].includes(table[i][j])) {
+    if ((hsh[[i, j]] && hsh[[i, j]] === direction)) {
+      let [iHash, jHash, el] = hashtagPos;
+      table[iHash][jHash] = el;
+      return true;
+    } else if (!hsh[[i, j]]) {
+      hsh[[i, j]] = direction;
+    }
+
+    switch(direction) {
+      case('up'):
+        if (isOutsideBounds(table, i - 1, j)) {
+          let [iHash, jHash, el] = hashtagPos;
+          table[iHash][jHash] = el;
+          return false;
+        } else {
+
+          i -= 1;
+        }
+  
+        break;
+      case('down'):
+        if (isOutsideBounds(table, i + 1, j)) {
+          let [iHash, jHash, el] = hashtagPos;
+          table[iHash][jHash] = el;
+          return false;
+        } else {
+
+          i += 1;
+        }
+  
+        break;
+      case('left'):
+        if (isOutsideBounds(table, i, j - 1)) {
+          let [iHash, jHash, el] = hashtagPos;
+          table[iHash][jHash] = el;
+          return false;
+        } else {
+
+          j -= 1;
+        }
+  
+        break;
+      case('right'):
+        if (isOutsideBounds(table, i, j + 1)) {
+          let [iHash, jHash, el] = hashtagPos;
+          table[iHash][jHash] = el;
+          return false;
+        } else {
+
+          j += 1;
+        }
+  
+        break;
+    }
   }
+  
+  switch(direction) {
+    case('up'):
+      return isLoopable(table, i + 1, j, 'right', hsh, hashtagPos, false);
 
-  return effectiveRow.some(el => el === direction);
+    case('down'):
+      return isLoopable(table, i - 1, j, 'left', hsh, hashtagPos, false);
+
+    case('left'):
+      return isLoopable(table, i, j + 1, 'up', hsh, hashtagPos, false);
+
+    case('right'):
+      return isLoopable(table, i, j - 1, 'down', hsh, hashtagPos, false);
+  }
 }
 
 function isOutsideBounds(table, i, j) {
@@ -64,17 +135,14 @@ function fillTable(table, i, j, direction = 'up') {
     table[i][j] = 'U';
   }
 
-  while (['R', 'D', 'U', 'L', 'O', '.'].includes(table[i][j])) {
+  while (['R', 'D', 'U', 'L', '.'].includes(table[i][j])) {
     switch(direction) {
       case('up'):
         if (isOutsideBounds(table, i - 1, j)) {
           return;
         } else {
-          if (rowContains(table, i, j, 'R')) {
+          if (isLoopable(table, i, j, 'right')) {
             COUNTER += 1;
-            // table[i - 1][j] = 'O';
-          } else if (table[i][j] !== 'O') {
-            table[i][j] = 'U';
           }
 
           table[i][j] = 'U';
@@ -86,11 +154,8 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i + 1, j)) {
           return;
         } else {
-          if (rowContains(table, i, j, 'L')) {
+          if (isLoopable(table, i, j, 'left')) {
             COUNTER += 1;
-            // table[i + 1][j] = 'O';
-          } else if (table[i][j] !== 'O') {
-            table[i][j] = 'D';
           }
 
           table[i][j] = 'D';
@@ -102,13 +167,10 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j - 1)) {
           return;
         } else {
-          if (colContains(table, i, j, 'U')) {
+          if (isLoopable(table, i, j, 'up')) {
             COUNTER += 1;
-            // table[i][j - 1] = 'O';
-          } else if (table[i][j] !== 'O') {
-            table[i][j] = 'L';
           }
-
+          
           table[i][j] = 'L';
           j -= 1;
         }
@@ -118,11 +180,8 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j + 1)) {
           return;
         } else {
-          if (colContains(table, i, j, 'D')) {
+          if (isLoopable(table, i, j, 'down')) {
             COUNTER += 1;
-            // table[i][j + 1] = 'O';
-          } else if (table[i][j] !== 'O') {
-            table[i][j] = 'R';
           }
 
           table[i][j] = 'R';
@@ -135,29 +194,28 @@ function fillTable(table, i, j, direction = 'up') {
   
   switch(direction) {
     case('up'):
-      if (colContains(table, i + 1, j, 'D')) {
+      if (isLoopable(table, i + 1, j, 'down')) {
         COUNTER += 1;
       }
-
       fillTable(table, i + 1, j + 1, 'right');
 
       break;
     case('down'):
-      if (colContains(table, i - 1, j, 'U')) {
+      if (isLoopable(table, i - 1, j, 'up')) {
         COUNTER += 1;
       }
       fillTable(table, i - 1, j - 1, 'left');
 
       break;
     case('left'):
-      if (rowContains(table, i, j + 1, 'R')) {
+      if (isLoopable(table, i, j + 1, 'right')) {
         COUNTER += 1;
       }
       fillTable(table, i - 1, j + 1, 'up');
 
       break;
     case('right'):
-      if (rowContains(table, i, j - 1, 'L')) {
+      if (isLoopable(table, i, j - 1, 'left')) {
         COUNTER += 1;
       }
       fillTable(table, i + 1, j - 1, 'down');
