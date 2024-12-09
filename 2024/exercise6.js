@@ -14,7 +14,7 @@ function iterateTable(table, Cb) {
   });
 }
 
-function isLoopable(table, i, j, direction = 'up', hsh = {}, hashtagPos = '', startPos = true) {
+function isLoopable(table, table2, i, j, direction = 'up', hsh = {}, hashtagPos = '', startPos = true) {
   if (isOutsideBounds(table, i, j)) {
     return false;
   }
@@ -25,35 +25,38 @@ function isLoopable(table, i, j, direction = 'up', hsh = {}, hashtagPos = '', st
     switch(direction) {
       case ('right'):
         hashtagPos = [i - 1, j, table[i - 1][j]];
-        table[i - 1][j] = '#';
+        table[i - 1][j] = 'O';
         
         // hsh[i - 1, j] = 'O';
         break;
       case ('left'):
         hashtagPos = [i + 1, j, table[i + 1][j]];        
-        table[i + 1][j] = '#'
+        table[i + 1][j] = 'O'
         // hsh[i + 1, j] = 'O';
         break;
       case ('up'):
         hashtagPos = [i, j - 1, table[i][j - 1]];
-        table[i][j - 1] = '#';
+        table[i][j - 1] = 'O';
         // hsh[i, j - 1] = 'O';
         break;
       case ('down'):
         hashtagPos = [i, j + 1, table[i][j + 1]];
-        table[i][j + 1] = '#';
+        table[i][j + 1] = 'O';
         // hsh[i, j + 1] = 'O';
         break;
     }
   }
 
-
   while (['R', 'D', 'U', 'L', '.'].includes(table[i][j])) {
-    if ((hsh[[i, j]] && hsh[[i, j]] === direction)) {
-      let [iHash, jHash, el] = hashtagPos;
+    let [iHash, jHash, el] = hashtagPos;
+    if (hsh[[i, j]] && hsh[[i, j]] === direction) {
       table[iHash][jHash] = el;
+
+      if (table2[iHash][jHash] !== '#') {
+        table2[iHash][jHash] = 'O';
+      }
       return true;
-    } else if (!hsh[[i, j]]) {
+    } else {
       hsh[[i, j]] = direction;
     }
 
@@ -104,19 +107,19 @@ function isLoopable(table, i, j, direction = 'up', hsh = {}, hashtagPos = '', st
         break;
     }
   }
-  
+
   switch(direction) {
     case('up'):
-      return isLoopable(table, i + 1, j, 'right', hsh, hashtagPos, false);
-
+      isLoopable(table, table2, i + 1, j, 'right', hsh, hashtagPos, false);
+      break;
     case('down'):
-      return isLoopable(table, i - 1, j, 'left', hsh, hashtagPos, false);
-
+      isLoopable(table, table2, i - 1, j, 'left', hsh, hashtagPos, false);
+      break;
     case('left'):
-      return isLoopable(table, i, j + 1, 'up', hsh, hashtagPos, false);
-
+      isLoopable(table, table2, i, j + 1, 'up', hsh, hashtagPos, false);
+      break;
     case('right'):
-      return isLoopable(table, i, j - 1, 'down', hsh, hashtagPos, false);
+      isLoopable(table, table2, i, j - 1, 'down', hsh, hashtagPos, false);
   }
 }
 
@@ -128,7 +131,7 @@ function isOutsideBounds(table, i, j) {
   return false
 }
 
-function fillTable(table, i, j, direction = 'up') {
+function fillTable(table, table2, i, j, direction = 'up') {
   if (isOutsideBounds(table, i, j)) {
     return;
   } else if (table[i][j] === '^') {
@@ -141,8 +144,8 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i - 1, j)) {
           return;
         } else {
-          if (isLoopable(table, i, j, 'right')) {
-            COUNTER += 1;
+          if (table[i - 1][j] === '.') {
+            isLoopable(table, table2, i, j, 'right');
           }
 
           table[i][j] = 'U';
@@ -154,8 +157,8 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i + 1, j)) {
           return;
         } else {
-          if (isLoopable(table, i, j, 'left')) {
-            COUNTER += 1;
+          if (table[i + 1][j] === '.') {
+            isLoopable(table, table2, i, j, 'left');
           }
 
           table[i][j] = 'D';
@@ -167,10 +170,10 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j - 1)) {
           return;
         } else {
-          if (isLoopable(table, i, j, 'up')) {
-            COUNTER += 1;
+          if (table[i][j - 1] === '.') {
+            isLoopable(table, table2, i, j, 'up');
           }
-          
+
           table[i][j] = 'L';
           j -= 1;
         }
@@ -180,8 +183,8 @@ function fillTable(table, i, j, direction = 'up') {
         if (isOutsideBounds(table, i, j + 1)) {
           return;
         } else {
-          if (isLoopable(table, i, j, 'down')) {
-            COUNTER += 1;
+          if (table[i][j + 1] === '.') {
+            isLoopable(table, table2, i, j, 'down');
           }
 
           table[i][j] = 'R';
@@ -191,41 +194,31 @@ function fillTable(table, i, j, direction = 'up') {
         break;
     }
   }
-  
+
   switch(direction) {
     case('up'):
-      if (isLoopable(table, i + 1, j, 'down')) {
-        COUNTER += 1;
-      }
-      fillTable(table, i + 1, j + 1, 'right');
+      fillTable(table, table2, i + 1, j, 'right');
 
       break;
     case('down'):
-      if (isLoopable(table, i - 1, j, 'up')) {
-        COUNTER += 1;
-      }
-      fillTable(table, i - 1, j - 1, 'left');
+      fillTable(table, table2, i - 1, j, 'left');
 
       break;
     case('left'):
-      if (isLoopable(table, i, j + 1, 'right')) {
-        COUNTER += 1;
-      }
-      fillTable(table, i - 1, j + 1, 'up');
+      fillTable(table, table2, i, j + 1, 'up');
 
       break;
     case('right'):
-      if (isLoopable(table, i, j - 1, 'left')) {
-        COUNTER += 1;
-      }
-      fillTable(table, i + 1, j - 1, 'down');
+      fillTable(table, table2, i, j - 1, 'down');
 
       break;
   }
 }
 
 fs.readFile('input6.txt', 'utf-8', function(err, data) {
+  let newData = data;
   let table = formatCoordinateTable(data);
+  let table2 = formatCoordinateTable(newData);
 
   for (let rowIdx = 0; rowIdx < table.length; rowIdx += 1) {
     let row = table[rowIdx];
@@ -234,13 +227,21 @@ fs.readFile('input6.txt', 'utf-8', function(err, data) {
       let space = row[colIdx];
 
       if (space === '^') {
-        fillTable(table, rowIdx, colIdx);
+        fillTable(table, table2, rowIdx, colIdx);
       }
     }
   }
 
+  let result = 0;
+  iterateTable(table2, (el) => {
+    if (el === 'O') {
+      result += 1;
+    }
+  });
+
   fs.writeFile('output6.txt', table.map(row => row.join('')).join('\n'), function () {});
-  console.log(COUNTER);
+  fs.writeFile('output6_2.txt', table2.map(row => row.join('')).join('\n'), function () {});
+  console.log(result);
 });
 
 
