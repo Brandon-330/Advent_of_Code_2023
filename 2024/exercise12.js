@@ -9,14 +9,14 @@ function formatCoordinateTable(data) {
 function checkAround(table, i, j, str, result = {}) {
   result.visited = result.visited ?? {};
   result.area = result.area ?? 0;
-  result.perimeter = result.perimeter ?? 0;
+  result.sides = result.sides ?? [];
 
-  if (i < 0 || j < 0 || i >= table.length || j >= table[0].length) {
-    result.perimeter += 1;
+  if ((i < 0 || j < 0 || i >= table.length || j >= table[0].length)) {
+    result.sides.push([i, j])
   } else if (result.visited[[i, j]]) {
     return;
   } else if (table[i][j] !== str) {
-    result.perimeter += 1;
+    result.sides.push([i, j]);
   } else {
     result.visited[[i, j]] = 'visited';
     result.area += 1;
@@ -30,6 +30,28 @@ function checkAround(table, i, j, str, result = {}) {
   }
 
   return;
+}
+
+function countSides(sides) {
+  let arr = sides;
+  let result = 0;
+  while (sides.length > 0) {
+    let [iExistingSide, jExistingSide] = sides.shift();
+    if (arr.some(arr => {
+          let [iCurrent, jCurrent] = arr;
+          return (
+            iExistingSide + 1 === iCurrent && jExistingSide === jCurrent || 
+            iExistingSide - 1 === iCurrent && jExistingSide === jCurrent ||
+            iExistingSide === iCurrent && jExistingSide + 1 === jCurrent ||
+            iExistingSide === iCurrent && jExistingSide - 1 === jCurrent
+          )
+       })
+    ) {} else {
+      result += 1;
+    }
+  };
+
+  return result;
 }
 
 function formatVisitedCoordinatesToTableCoordinates(visitedStr) {
@@ -57,9 +79,11 @@ fs.readFile('input12.txt', 'utf-8', (error, data) => {
 
       if (char !== '#') {
         let result = checkAround(table, rowIdx, colIdx, char);
+        let sides = countSides(result.sides);
+        console.log(result, sides);
         let visitedCoordinates = formatVisitedCoordinatesToTableCoordinates(Object.keys(result.visited));
-        
-        total += (result.perimeter * result.area);
+
+        total += (sides * result.area);
         fillVisited(table, visitedCoordinates);
       }
     }
