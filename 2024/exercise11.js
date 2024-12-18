@@ -32,62 +32,71 @@ function splitStone(numStr) {
   return [str1 ? str1 : '0', str2 ? str2 : '0'];
 }
 
-function recurse(stone, blink = 75, memo = {}) {
-  if (blink === 0) {
-    return 1;
-  } else if (memo[str]) {
-    return memo[str];
-  } else {
-    if (str.length % 2 !== 0) {
-      let newNum = Number(str) * 2024;
-      memo[str] = String(newNum);
-    } else {
-      memo[str] = splitStone(stone);
-    }
-
-    if (Array.isArray(memo[stone])) {
-      for (let i = 0; i < memo[stone].length; i += 1) {
-        return recurse(memo[str][i], blink + 1, memo);
-      }
-    } else {
-      return recurse(memo[str], blink + 1, memo);
-    }
-  }
-}
-
 fs.readFile('input11.txt', 'utf-8', function(err, data) {
   let blinks = 75;
   let stones = data.split(' ');
-  let memo = {'0': '1'};
+  let memo;
   let total = 0;
 
-  while (stones.length > 0) {
-    let newArr = [stones.shift()];
-    for (let blink = 0; blink < blinks; blink += 1) {
-      console.log(stones.length, blink)
-      let length = newArr.length
-      for (let idx = 0; idx < length; idx += 1) {
-        let stone = newArr.shift();
-        
+  while (blinks > -1) {
+    blinks -= 1;
+    console.log(blinks);
+    memo = {};
+    stones.forEach(stone => {
+      if (Array.isArray(stone)) {
+        if (!memo[stone[0]]) {
+          memo[stone[0]] = 0;
+        }
+
+        memo[stone[0]] += stone[1];
+      } else {
         if (!memo[stone]) {
-          if (stone.length % 2 !== 0) {
-            let newNum = Number(stone) * 2024;
-            memo[stone] = String(newNum);
-          } else {
-            memo[stone] = splitStone(stone);
-          }
+          memo[stone] = 0;
         }
   
-        if (Array.isArray(memo[stone])) {
-          newArr.push(...memo[stone]);
-        } else {
-          newArr.push(memo[stone]);
-        }
+        memo[stone] += 1;
       }
-    }
-
-    total += newArr.length;
+    });
+    
+    stones = [];
+    Object.keys(memo).forEach(stone => {
+      let newNum;
+      if (stone === '0') {
+        newNum = '1';
+        stones.push([newNum, memo[stone]]);
+      } else if (stone.length % 2 !== 0) {
+        newNum = String(Number(stone) * 2024);
+        stones.push([newNum, memo[stone]]);
+      } else {
+        newNum = splitStone(stone);
+        newNum = newNum.map(num => [num, memo[stone]])
+        stones.push(...newNum);
+      }
+    });
   }
+
+  Object.keys(memo).forEach(stone => {
+    total += memo[stone];
+  });
+
+  // if (!memo[stone]) {
+  //   if (stone.length % 2 !== 0) {
+  //     let newNum = Number(stone) * 2024;
+  //     memo[stone] = String(newNum);
+  //   } else {
+  //     memo[stone] = splitStone(stone);
+  //   }
+  // }
+
+  // if (Array.isArray(memo[stone])) {
+  //   newArr.push(...memo[stone]);
+  // } else {
+  //   newArr.push(memo[stone]);
+  // }
+
+
+
+
   // while (blinks > 0) {
   //   blinks -= 1;
   //   console.log(blinks)
